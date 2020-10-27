@@ -1,10 +1,23 @@
 package com.example.videostream;
 
 public class Member {
+    private String name;
+    private String Videourl;
+    private String search;
+    private String Username;
 
-    public String name, Videourl, search;
 
-    public Member(){ }
+    public Member(){}
+
+
+    public String getUsername() {
+        return Username;
+    }
+
+    public void setUsername(String username) {
+        Username = username;
+    }
+
 
     public String getName() {
         return name;
@@ -29,5 +42,4 @@ public class Member {
     public void setSearch(String search) {
         this.search = search;
     }
-
 }
