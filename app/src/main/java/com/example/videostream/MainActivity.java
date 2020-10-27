@@ -107,47 +107,56 @@ public class MainActivity extends AppCompatActivity {
     private void UploadVideo(){
         final String videoName = editText.getText().toString();
         final String  search = editText.getText().toString().toLowerCase();
-        if (videoUri != null || !TextUtils.isEmpty(videoName)){
+        int duration = videoView.getDuration()/1000;
+        int hours = duration / 3600;
+        int minutes = (duration / 60) - (hours * 60);
+        int seconds = duration - (hours * 3600) - (minutes * 60);
+//        String formatted = String.format("%d:%02d:%02d", hours, minutes, seconds);
+//        Toast.makeText(getApplicationContext(), "duration is " + formatted ,  Toast.LENGTH_LONG).show();
 
-            progressBar.setVisibility(View.VISIBLE);
-            final  StorageReference reference = storageReference.child(System.currentTimeMillis() + "." + getExt(videoUri));
-            uploadTask = reference.putFile(videoUri);
+        if (minutes < 16) {
+            if (videoUri != null && !TextUtils.isEmpty(videoName)) {
 
-            Task<Uri> urltask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()){
-                        throw task.getException();
-                    }
-                    return reference.getDownloadUrl();
-                }
-            })
-                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
+                progressBar.setVisibility(View.VISIBLE);
+                final StorageReference reference = storageReference.child(System.currentTimeMillis() + "." + getExt(videoUri));
+                uploadTask = reference.putFile(videoUri);
 
-                            if (task.isSuccessful()) {
-                                Uri downloadUrl = task.getResult();
-                                progressBar.setVisibility(View.INVISIBLE);
-                                Toast.makeText(MainActivity.this, "Data saved", Toast.LENGTH_SHORT).show();
-
-                                member.setName(videoName);
-                                member.setVideourl(downloadUrl.toString());
-                                member.setSearch(search);
-                                String i = databaseReference.push().getKey();
-                              //  databaseReference.child(i).setValue(member);
-                                databaseReference.child(i).setValue(member);
-//                                Toast.makeText(MainActivity.this, (CharSequence) member, Toast.LENGTH_LONG).show();
-                            }else {
-                                Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                            }
+                Task<Uri> urltask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
                         }
-                    });
+                        return reference.getDownloadUrl();
+                    }
+                })
+                        .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
 
+                                if (task.isSuccessful()) {
+                                    Uri downloadUrl = task.getResult();
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(MainActivity.this, "Data saved", Toast.LENGTH_SHORT).show();
+
+                                    member.setName(videoName);
+                                    member.setVideourl(downloadUrl.toString());
+                                    member.setSearch(search);
+                                    String i = databaseReference.push().getKey();
+                                    databaseReference.child(i).setValue(member);
+//                                Toast.makeText(MainActivity.this, (CharSequence) member, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+            } else {
+                Toast.makeText(this, "Please make sure the name of video is not empty", Toast.LENGTH_SHORT).show();
+            }
         }else {
-            Toast.makeText(this, "All Fields are required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please make sure the length of video is not greater than 15 minutes", Toast.LENGTH_SHORT).show();
         }
-
     }
 }
 
