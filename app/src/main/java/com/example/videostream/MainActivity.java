@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void ShowVideo(View view) {
 
-//        Intent intent = new Intent(MainActivity.this,Showvideo.class);
-//        startActivity(intent);
+        Intent intent = new Intent(MainActivity.this,Showvideo.class);
+        startActivity(intent);
 
     }
     private void UploadVideo(){
@@ -159,6 +159,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
-
-
